@@ -1,4 +1,5 @@
-const express = require("express");
+//const express = require("express");
+import express from 'express'
 let deck = [
   13, 13, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7,
   7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10,
@@ -9,6 +10,16 @@ let currentCard = {
   thrownBy:'',
   number:'',
   amount:''
+}
+function changeCurrentCard(thrownBy,number,amount){
+  //si es el primero en tirar tendria que tirar la amount que quiera
+  //si no es el primero deberia fijarse si la amount es suficiente y si el numero es menor
+  //se tiene que cambiar el thrownBy y el number, el amount solo cambia si es el primero o si se reinicia la ronda porque
+  //el thrownBy es igual
+  //tendria que ver si tirar todas por defecto en godot o dar la opcion para tirar menos
+  //en la mayoria de los casos se tiran todas
+  let thrownBy,number,amount
+  currentCard = {thrownBy,number,amount}
 }
 const playerAmount = 4;
 let hands;
@@ -64,6 +75,8 @@ app.get('/',(req,res)=>{
 })
 
 app.post("/", async (req, res) => {
+  //tiene que ser un array de numeros el req.body.number
+  //sino se tiene que fijar el amount de cartas en la ultima tirada y restar ese numero de cartas de la hand
   hands[req.body.id] = throwCard(hands[req.body.id], req.body.number, 1);
   res.send({ thrown: req.body, newHand: hands[req.body.id] });
 });
