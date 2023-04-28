@@ -33,7 +33,7 @@ app.get("/shuffle", (req, res) => {
 
 function sortArrayOfArrays(arr) {
   for (let i = 0; i < arr.length; i++) {
-    arr[i].sort(function(a, b) {
+    arr[i].sort(function (a, b) {
       return a - b;
     });
   }
@@ -46,7 +46,7 @@ function distribute(array, size) {
   for (let i = 0; i < array.length; i += size) {
     chunks.push(array.slice(i, i + size));
   }
-  chunks = sortArrayOfArrays(chunks)
+  chunks = sortArrayOfArrays(chunks);
   return chunks;
 }
 app.get("/distribute", (req, res) => {
@@ -84,22 +84,30 @@ app.post("/", async (req, res) => {
     currentCard.thrownBy === "" ||
     currentCard.thrownBy === req.body.id
   ) {
-    hands[req.body.id] = eliminarNumerosIguales(
-      req.body.number,
-      hands[req.body.id]
-    );
+    //let amount,tmp=
+    //hands[req.body.id] =
+    let tmp = eliminarNumerosIguales(req.body.number, hands[req.body.id]);
+    hands[req.body.id] = tmp.numerosUnicos;
+    currentCard = {
+      thrownBy: req.body.id,
+      number: req.body.number,
+      amount: tmp.amount,
+    };
   } else {
     hands[req.body.id] = throwCard(
       hands[req.body.id],
       req.body.number,
       currentCard.amount
     );
+    currentCard.thrownBy = req.body.id;
+    currentCard.number = req.body.number;
   }
   //hay que cambiar la current card
-  res.send({ 
+  res.send({
     currentCard,
-    //thrown: req.body, 
-    newHand: hands[req.body.id] });
+    //thrown: req.body,
+    newHand: hands[req.body.id],
+  });
 });
 function eliminarNumerosIguales(numero, numeros) {
   // creamos un nuevo array para almacenar los números únicos
@@ -113,9 +121,9 @@ function eliminarNumerosIguales(numero, numeros) {
       numerosUnicos.push(numeros[i]);
     }
   }
-
+  let amount = numeros.length - numerosUnicos.length;
   // devolvemos el nuevo array de números únicos
-  return numerosUnicos;
+  return { numerosUnicos, amount };
 }
 
 function changeCurrentCard(thrownBy, number, amount) {
