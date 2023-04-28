@@ -96,7 +96,10 @@ app.post("/", async (req, res) => {
     );
   }
   //hay que cambiar la current card
-  res.send({ thrown: req.body, newHand: hands[req.body.id] });
+  res.send({ 
+    currentCard,
+    //thrown: req.body, 
+    newHand: hands[req.body.id] });
 });
 function eliminarNumerosIguales(numero, numeros) {
   // creamos un nuevo array para almacenar los números únicos
