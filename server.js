@@ -13,6 +13,11 @@ let currentCard = {
 };
 const playerAmount = 4;
 let hands;
+const app = express();
+const port = 3000;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -20,27 +25,32 @@ function shuffle(array) {
   }
   return array;
 }
-function distribute(array, size) {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  return chunks;
-}
-const app = express();
-const port = 3000;
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 app.get("/shuffle", (req, res) => {
   deck = shuffle(deck);
   //console.log(deck);
   res.send("the cards have been shuffled"); //{ deck });
 });
 
+function sortArrayOfArrays(arr) {
+  for (let i = 0; i < arr.length; i++) {
+    arr[i].sort(function(a, b) {
+      return a - b;
+    });
+  }
+  return arr;
+}
+
+function distribute(array, size) {
+  //deberia poderse ordenar las cartas
+  let chunks = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  chunks = sortArrayOfArrays(chunks)
+  return chunks;
+}
 app.get("/distribute", (req, res) => {
   //deberia haber una forma de setear la cantidad de jugadores en el gui
-  //deberia poderse ordenar las cartas
   hands = distribute(deck, deck.length / playerAmount);
   //console.log(hands);
   //res.send({ hands });
@@ -65,6 +75,8 @@ app.post("/", async (req, res) => {
   //if primera carta o id==thrownBy
   //eliminarNumerosIguales
   //
+  //hay un error que hace que aunque no tenga la carta no la tire
+  //esto no ocurre porque se cambie el currentCard, sino porque se envia el req.body de nuevo
   if (req.body.number === 0) {
     //pasar al siguiente jugador
     //cambiar currentPlayer
@@ -110,7 +122,8 @@ function changeCurrentCard(thrownBy, number, amount) {
   //el thrownBy es igual
   //tendria que ver si tirar todas por defecto en godot o dar la opcion para tirar menos
   //en la mayoria de los casos se tiran todas
-  let thrownBy, number, amount;
+
+  //let thrownBy, number, amount;
   currentCard = { thrownBy, number, amount };
 }
 function throwCard(array, num, amount) {

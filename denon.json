@@ -1,0 +1,9 @@
+{
+    "scripts": {
+      "dev": {
+        "cmd": "deno run server.js",
+        "watch": ["server.js", "models/**/*"]
+      }
+    }
+  }
+  
