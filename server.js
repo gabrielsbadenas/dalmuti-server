@@ -11,12 +11,18 @@ let currentCard = {
   number: "",
   amount: "",
 };
-const playerAmount = 4;
+let currentPlayer = 0;
+let playerAmount = 4;
 let hands;
 const app = express();
 const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.post("/players", (req, res) => {
+  playerAmount = req.body.playerAmount;
+  res.send({playerAmount});
+});
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -66,6 +72,14 @@ app.get("/", (req, res) => {
   res.send(currentCard);
 });
 
+function changePlayer() {
+  if (currentPlayer === playerAmount - 1) {
+    currentPlayer = 0;
+  } else {
+    currentPlayer++;
+  }
+}
+
 app.post("/", async (req, res) => {
   //en caso de que no se tengan las cartas requesteadas se deberia pasar
   //si el jugador actual no es el que tiene turno no deberia hacer nada
@@ -102,6 +116,7 @@ app.post("/", async (req, res) => {
     currentCard.thrownBy = req.body.id;
     currentCard.number = req.body.number;
   }
+  changePlayer(req.body.id);
   //hay que cambiar la current card
   res.send({
     currentCard,
